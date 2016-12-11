@@ -28,4 +28,9 @@ public class ActionState extends State {
 
         player.sendMailToEnemy(enemyMsg.toString());
     }
+
+    @Override
+    public void defineWinner(String winnerName, String loserName, boolean deadHeat) {
+        winnerDefinition(winnerName, loserName, deadHeat);
+    }
 }

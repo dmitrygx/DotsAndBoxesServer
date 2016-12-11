@@ -1,6 +1,7 @@
 package MultiThreadedServer;
 
 import Players.Player;
+import sun.net.ConnectionResetException;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,11 +28,13 @@ public class WorkerRunnable implements Runnable{
 
             while (true) {
                 String msg;
-                System.out.println("HERE");
-                if ((msg = buffread.readLine()) != null) {
-                    player.handleEvent(msg);
+                try {
+                    if ((msg = buffread.readLine()) != null) {
+                        player.handleEvent(msg);
+                    }
+                } catch (ConnectionResetException sockex) {
+                    player.getOwnSocket().close();
                 }
-                System.out.println("NOT HERE");
             }
 
         } catch (IOException e) {

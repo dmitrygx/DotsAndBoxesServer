@@ -120,6 +120,29 @@ public class StateEventMatrix {
                         }
                     }
 
+                    if (result == 1) {
+                        boolean deadHeat = false;
+                        String gameWinner[] = game.defineWinnerOfGame();
+
+                        if ((gameWinner[0].compareTo("") == 0) && (gameWinner[1].compareTo("") == 0)) {
+                            break;
+                        } else {
+                            if (((gameWinner[0].compareTo(player.getName()) == 0) && (gameWinner[1].compareTo(player.getEnemyPlayer().getName()) == 0)) ||
+                                    ((gameWinner[0].compareTo(player.getEnemyPlayer().getName()) == 0) && (gameWinner[1].compareTo(player.getName()) == 0))) {
+                                deadHeat = true;
+                            }
+
+                            if (!deadHeat) {
+                                if (gameWinner[0].compareTo(player.getName()) == 0) {
+                                    states[getCurrentState()].defineWinner(player.getName(), player.getEnemyPlayer().getName(), deadHeat);
+                                } else {
+                                    states[getCurrentState()].defineWinner(player.getEnemyPlayer().getName(), player.getName(), deadHeat);
+                                }
+                            }
+                        }
+
+                    }
+
                     break;
                 }
             }
