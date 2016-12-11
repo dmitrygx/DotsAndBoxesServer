@@ -18,6 +18,13 @@ public class InitialState extends State {
             obj.put("state", StateEventMatrix.WAIT_FOR_GAME);
             player.sendMailToItself(obj.toString());
         } else {
+            JSONObject playerColorMsg = new JSONObject();
+            playerColorMsg.put("event", StateEventMatrix.ASSIGN_COLOR);
+            playerColorMsg.put("labelPlayer1", player.getEnemyPlayer().getName());
+            playerColorMsg.put("labelPlayer2", player.getName());
+            player.sendMailToItself(playerColorMsg.toString());
+            player.sendMailToEnemy(playerColorMsg.toString());
+
             player.getMatrix().setCurrentState(StateEventMatrix.WAIT);
             JSONObject ownMsg = new JSONObject();
 

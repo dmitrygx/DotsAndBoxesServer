@@ -1,5 +1,8 @@
 package gameElements;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 /**
  * Created by Дмитрий on 12/10/2016.
  */
@@ -50,21 +53,28 @@ public class GameArea {
         this.winnerOfGame = winnerOfGame;
     }
 
-    public int markLineAsUsed(String id, String usedBy) {
+    public GameWinnerPair<Integer, Integer[]> markLineAsUsed(String id, String usedBy) {
         int marked = -1;
-        for (int i = 0; i < 8; i++) {
+        Integer arrayOfWin[] = new Integer[9];
+
+        Arrays.fill(arrayOfWin, 0);
+
+        for (int i = 0; i < 9; i++) {
             if (gameRectangleArray[i].isBelongLine(id)) {
                 if (!gameRectangleArray[i].isUsedLine(id)) {
-                    gameRectangleArray[i].markLineAsUsed(id, usedBy);
+                    if (gameRectangleArray[i].markLineAsUsed(id, usedBy)) {
+                        arrayOfWin[i] = 1;
+                    }
 
                     marked = 0;
                 }
                 else {
-                    return -1;
+                    marked = -1;
+                    return new GameWinnerPair<Integer, Integer[]>(marked, arrayOfWin);
                 }
             }
         }
 
-        return marked;
+        return new GameWinnerPair<Integer, Integer[]>(marked, arrayOfWin);
     }
 }

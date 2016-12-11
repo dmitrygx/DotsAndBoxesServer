@@ -28,11 +28,28 @@ public class GameRectangle {
         this.winner = winner;
     }
 
-    public void markLineAsUsed(String id, String usedBy) {
+    public boolean markLineAsUsed(String id, String usedBy) {
+        boolean marked = false;
+        int win = 0;
+
         for (int i = 0; i < 4; i++) {
             if ((0 == lines[i].getId().compareTo(id)) && (!lines[i].isUsedFlag())) {
                 lines[i].markLineAsUsed(usedBy);
+                marked = true;
+                break;
             }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            win += (lines[i].isUsedFlag() ? 1 : 0);
+        }
+
+        if (win == 4) {
+            setWinner(usedBy);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

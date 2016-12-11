@@ -1,8 +1,10 @@
 package Players;
 
 import gameElements.GameArea;
+import gameElements.GameWinnerPair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.omg.PortableInterceptor.Interceptor;
 
 public class StateEventMatrix {
 
@@ -15,6 +17,8 @@ public class StateEventMatrix {
     public static final short CHANGE_STATE = 0;
     public static final short CONFIRMATION = 1;
     public static final short UPDATE = 2;
+    public static final short MARK_AS_WIN = 3;
+    public static final short ASSIGN_COLOR = 4;
 
     final short SET_NAME_EVENT = 0;
     final short PERFORM_ACTION = 1;
@@ -51,6 +55,7 @@ public class StateEventMatrix {
             JSONObject jsonObj = (JSONObject) obj;
             long event = (Long)jsonObj.get("event");
             int intEvent = (int) event;
+            Integer arrayOfWinRect[] = null;
             System.out.println("Event = " + event);
             switch (intEvent)
             {
@@ -69,11 +74,14 @@ public class StateEventMatrix {
                     int result = getCurrentState() == ACTION ? 1 : 0;
 
                     if (result == 1) {
-                        if (game.markLineAsUsed(line, player.getName()) < 0) {
+                        GameWinnerPair<Integer, Integer[]> pair = game.markLineAsUsed(line, player.getName());
+
+                        if (pair.marked < 0) {
                             result = 0;
 
                         } else {
                             player.getEnemyPlayer().getMatrix().getGame().markLineAsUsed(line, player.getName());
+                            arrayOfWinRect = pair.arrayOfWin;
                         }
                     }
 
@@ -85,8 +93,8 @@ public class StateEventMatrix {
                     player.sendMailToItself(confirmation.toString());
 
                     if (result == 1) {
-                        JSONObject update = new JSONObject();
 
+                        JSONObject update = new JSONObject();
                         update.put("event", StateEventMatrix.UPDATE);
                         update.put("line", line);
                         update.put("color", player.getColor());
@@ -94,6 +102,22 @@ public class StateEventMatrix {
                         player.sendMailToEnemy(update.toString());
 
                         states[getCurrentState()].performAction(jsonObj.toString());
+                    }
+
+                    if (result == 1) {
+                        if (arrayOfWinRect != null) {
+                            for (int i = 0; i < 9; i++) {
+                                if (arrayOfWinRect[i] == 1) {
+                                    JSONObject markAsWin = new JSONObject();
+                                    markAsWin.put("event", StateEventMatrix.MARK_AS_WIN);
+                                    markAsWin.put("rect", "rect" + (i + 1));
+                                    markAsWin.put("color", player.getColor());
+
+                                    player.sendMailToItself(markAsWin.toString());
+                                    player.sendMailToEnemy(markAsWin.toString());
+                                }
+                            }
+                        }
                     }
 
                     break;

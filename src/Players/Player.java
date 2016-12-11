@@ -81,6 +81,8 @@ public class Player {
         }
 
         writer.println(msg);
+
+        System.out.println("SEND to Itself - " + msg);
     }
 
     public void sendMailToEnemy(String msg) {
@@ -93,6 +95,8 @@ public class Player {
         }
 
         writer.println(msg);
+
+        System.out.println("SEND to Enemy - " + msg);
     }
 
     public Socket getOwnSocket() {
