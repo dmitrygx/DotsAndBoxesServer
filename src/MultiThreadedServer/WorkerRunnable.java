@@ -1,6 +1,8 @@
 package MultiThreadedServer;
 
 import Players.Player;
+import Players.StateEventMatrix;
+import org.json.simple.JSONObject;
 import sun.net.ConnectionResetException;
 
 import java.io.*;
@@ -13,8 +15,6 @@ public class WorkerRunnable implements Runnable{
     InputStream ownInput = null;
     OutputStream ownOutput = null;
 
-    InputStream enemyInput = null;
-    OutputStream enemyOutput = null;
 
     public WorkerRunnable(Player player) {
         this.player = player;
@@ -33,13 +33,32 @@ public class WorkerRunnable implements Runnable{
                         player.handleEvent(msg);
                     }
                 } catch (ConnectionResetException sockex) {
-                    player.getOwnSocket().close();
+                    endGame();
+                    return;
                 }
             }
 
         } catch (IOException e) {
             //report exception somewhere.
-            e.printStackTrace();
+            endGame();
+            return;
+        }
+    }
+
+    private void endGame() {
+        JSONObject msgToEnemy = new JSONObject();
+
+        msgToEnemy.put("event", StateEventMatrix.CHANGE_STATE);
+        msgToEnemy.put("state", StateEventMatrix.END);
+        msgToEnemy.put("result_of_game", 1);
+        msgToEnemy.put("winner", player.getEnemyPlayer().getName());
+        msgToEnemy.put("loser", player.getName());
+        player.sendMailToEnemy(msgToEnemy.toString());
+
+        try {
+            player.getEnemySocket().close();
+        } catch (IOException e) {
+            return;
         }
     }
 }

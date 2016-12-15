@@ -100,9 +100,9 @@ public class StateEventMatrix {
                         update.put("color", player.getColor());
 
                         player.sendMailToEnemy(update.toString());
-
-                        states[getCurrentState()].performAction(jsonObj.toString());
                     }
+
+                    boolean winnerOfRect = false;
 
                     if (result == 1) {
                         if (arrayOfWinRect != null) {
@@ -115,9 +115,17 @@ public class StateEventMatrix {
 
                                     player.sendMailToItself(markAsWin.toString());
                                     player.sendMailToEnemy(markAsWin.toString());
+
+                                    winnerOfRect = true;
                                 }
                             }
                         }
+                    }
+
+
+                    if ((result == 1) && (!winnerOfRect)) {
+
+                        states[getCurrentState()].performAction(jsonObj.toString());
                     }
 
                     if (result == 1) {
